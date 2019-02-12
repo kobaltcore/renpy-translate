@@ -26,14 +26,12 @@ from google.cloud import translate
 
 
 TRANSLATION_CACHE_FILE = "translation_cache.json"
-# TODO: figure out all used tags before running
-sys.exit(1)
-TAG_PATTERN = r"{/?i}|{/?q}|{/?b}|{/?size}|{/?a(=[A-z0-9:/?.=&#_-]+)?}"
+TAG_PATTERN = r"{/?(i|q|b|s|u|size|plain|fast|nw|p|w|clear)}|{#.*?}|{/?image(=.*?)?}|{/?font(=\w+\.ttf)?}|{/?(outline)?color(=#\w{3,6})?}|{/?(alpha|cps|k|size|v?space)(\+?=\d+\.?(\d+)?)?}|{/?a(=[A-z0-9:/?.=&#_-]+)?}"
 PPC = 20 / 1_000_000  # 20$ per 1M characters
 
 
 def confirm(text):
-    result = input("{}\n[y]es/[n]o: ".format(text)).lower()
+    result = input("{}\n{}[y]es{}/{}[n]o{}: ".format(text, Fore.GREEN, Style.RESET_ALL, Fore.RED, Style.RESET_ALL)).lower()
     if not result in ["y", "yes"]:
         return False
     return True
