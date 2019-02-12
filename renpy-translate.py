@@ -292,8 +292,8 @@ def main(args):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(
-        description="A tool for translating Ren'Py translation script to different languages.")
+    parser = argparse.ArgumentParser(description="A tool for translating Ren'Py translation script\
+                                                  to different languages via the Google Cloud Platform Translate API.")
     parser.add_argument("-i", "--input", type=str, dest="input_dir", required=True,
                         metavar="dir", help="(required) The directory containing the extracted Ren'Py translations")
     parser.add_argument("-l", "--language", type=str, dest="target_language", required=True,
