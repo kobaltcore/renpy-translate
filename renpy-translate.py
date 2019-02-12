@@ -246,11 +246,11 @@ def main(args):
     print("")
     if price < 1:
         print("\tEstimated cost: {}{:.2f} cents{} ({}{} cache hits{})".format(Fore.RED, price * 100,
-                                                                            Style.RESET_ALL, Fore.GREEN,
-                                                                            cache_hits, Style.RESET_ALL))
+                                                                              Style.RESET_ALL, Fore.GREEN,
+                                                                              cache_hits, Style.RESET_ALL))
     else:
         print("\tEstimated cost: {}{:.2f}${} ({}{} cache hits{})".format(Fore.RED, price, Style.RESET_ALL,
-                                                                       Fore.GREEN, cache_hits, Style.RESET_ALL))
+                                                                         Fore.GREEN, cache_hits, Style.RESET_ALL))
     print("")
     print("{}Note{}: The estimated cost may be less than the full cost if cached translations are available.".format(
         Fore.RED, Style.RESET_ALL))
@@ -271,17 +271,20 @@ def main(args):
     for file, translation_file in tqdm(file_map.items(), total=len(file_map.keys()), unit="files"):
         with open(file, "r") as f:
             text_lines = f.readlines()
-            for block in translation_file:
+            for block in tqdm(translation_file, total=len(translation_file.translation_blocks), unit="blocks"):
                 for item in block:
                     m = re.match(r"(\s*)(\w+)?\s*("")", text_lines[item.target_line])
-                    text_lines[item.target_line] = '{}{} "{}"\n'.format(m.group(1),
-                                                                        m.group(2),
-                                                                        item.get_translated_content())
+                    if m.group(2):
+                        text_lines[item.target_line] = '{}{} "{}"\n'.format(m.group(1), m.group(2),
+                                                                            item.get_translated_content())
+                    else:
+                        text_lines[item.target_line] = '{}"{}"\n'.format(m.group(1), item.get_translated_content())
         common_path = os.path.commonpath([os.path.abspath(file), os.path.abspath(args.input_dir)])
         out_path = os.path.join(args.output_dir, os.path.relpath(file, common_path))
         os.makedirs(os.path.dirname(out_path), exist_ok=True)
         with open(out_path, "w") as f:
             f.writelines(text_lines)
+    print("")
 
     print("Persisting Cache")
     with open(TRANSLATION_CACHE_FILE, "w") as f:
