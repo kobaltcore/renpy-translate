@@ -31,7 +31,8 @@ PPC = 20 / 1_000_000  # 20$ per 1M characters
 
 
 def confirm(text):
-    result = input("{}\n{}[y]es{}/{}[n]o{}: ".format(text, Fore.GREEN, Style.RESET_ALL, Fore.RED, Style.RESET_ALL)).lower()
+    result = input("{}\n{}[y]es{}/{}[n]o{}: ".format(text, Fore.GREEN, Style.RESET_ALL,
+                                                     Fore.RED, Style.RESET_ALL)).lower()
     if not result in ["y", "yes"]:
         return False
     return True
@@ -44,15 +45,6 @@ def check(args):
             sys.exit(0)
         rmtree(args.output_dir)
     os.makedirs(args.output_dir, exist_ok=True)
-
-
-class Tag():
-
-    def __init__(self, tag_type):
-        self.tag_type = tag_type
-
-    def __repr__(self):
-        return 'Tag(type="{}")'.format(self.tag_type)
 
 
 class TranslationString():
@@ -183,28 +175,6 @@ class TranslationFile():
         return "TranslationFile({}, {} blocks)".format(self.filename, len(self.translation_blocks))
 
 
-def parse_tags(string):
-    tmp_list = []
-    for i in range(len(breakpoints)):
-        c_start, c_stop = breakpoints[i]
-        tmp_list.append(Tag(string[c_start:c_stop]))
-        if i + 1 < len(breakpoints):
-            n_start, n_stop = breakpoints[i + 1]
-            if string[c_stop:n_start]:
-                if string[c_stop:n_start] == " ":
-                    tmp_list.append(" ")
-                tmp_list.append(TranslationString(string[c_stop:n_start]))
-
-    # Add rest of string
-    rest = string[breakpoints[-1][1]:]
-    if rest:
-        if rest.startswith(" "):
-            tmp_list.append(" ")
-        tmp_list.append(TranslationString(string[breakpoints[-1][1]:].strip()))
-
-    return tmp_list
-
-
 def main(args):
     global TRANSLATION_CACHE
 
@@ -273,13 +243,15 @@ def main(args):
         price += _price
         cache_hits += _cache_hits
 
+    print("")
     if price < 1:
-        print("Estimated cost: {}{:.2f} cents{} ({}{} cache hits{})".format(Fore.RED, price * 100,
+        print("\tEstimated cost: {}{:.2f} cents{} ({}{} cache hits{})".format(Fore.RED, price * 100,
                                                                             Style.RESET_ALL, Fore.GREEN,
                                                                             cache_hits, Style.RESET_ALL))
     else:
-        print("Estimated cost: {}{:.2f}${} ({}{} cache hits{})".format(Fore.RED, price, Style.RESET_ALL,
+        print("\tEstimated cost: {}{:.2f}${} ({}{} cache hits{})".format(Fore.RED, price, Style.RESET_ALL,
                                                                        Fore.GREEN, cache_hits, Style.RESET_ALL))
+    print("")
     print("{}Note{}: The estimated cost may be less than the full cost if cached translations are available.".format(
         Fore.RED, Style.RESET_ALL))
     if not confirm("Do you want to start the translation? ({}This will incur the calculated cost{})".format(Fore.RED, Style.RESET_ALL)):
